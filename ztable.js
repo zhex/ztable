@@ -20,7 +20,9 @@
 
 			opts = $.extend(defaults, options),
 
-			$table = $(this),
+			$nodes = $(this),
+
+			$table, // current table
 
 			$dc, // data container
 
@@ -32,10 +34,12 @@
 
 			col_width; // frozen columns width
 
-
 		var init = function() {
-			createLayout();
-			setStyle();
+			$nodes.each(function() {
+				$table = $(this);
+				createLayout();
+				setStyle();
+			});
 		}
 
 		// create divs for the table needed
@@ -61,11 +65,6 @@
 			if (opts.tableWidth == '100%' || opts.tableWidth == '')
 				opts.tableWidth = $wrapper.parent().css('width').split('px')[0];
 
-			$wrapper.css({
-				'width':		opts.tableWidth,
-				'position':		'relative'
-			});
-
 			$cc.css({
 				'width':		col_width,
 				'overflow':		'hidden'
@@ -79,12 +78,17 @@
 				'overflow-x':	'scroll'
 
 			}).find('table').css('margin-left', col_width * -1);
+
+			$wrapper.css({
+				'width':		opts.tableWidth,
+				'position':		'relative',
+				'height':		$table.height() + 20
+			});
 		};
 
 
 		// run...
 		init();
-		
 
 	}
 	
