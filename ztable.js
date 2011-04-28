@@ -18,8 +18,10 @@
 				titleContainerClass:	'ztable-title-container',
 				tableWidth:				'100%',
 				tableHeight:			300,
-				frozenRow:				1,
-				frozenColumn:			1
+				frozenRow:				true,
+				rowCount:				1,
+				frozenColumn:			true,	
+				columnCount:			1
 			},
 
 			opts = $.extend(defaults, options),
@@ -65,15 +67,19 @@
 
 			$dc = $table.parent();
 			$wrapper = $dc.parent();
-			$vcc = $('<div />').addClass(opts.vColumnContainerClass);
-			$wrapper.prepend($vcc.append($table.clone()));
 
-			$hcc = $('<div />').addClass(opts.hColumnContainerClass);
-			$wrapper.prepend($hcc.append($table.clone()));
-
-			$tc = $('<div />').addClass(opts.titleContainerClass);
-			$wrapper.prepend($tc.append($table.clone()));
-
+			if (opts.frozenColumn) {
+				$vcc = $('<div />').addClass(opts.vColumnContainerClass);
+				$wrapper.prepend($vcc.append($table.clone()));
+			}
+			if (opts.frozenRow) {
+				$hcc = $('<div />').addClass(opts.hColumnContainerClass);
+				$wrapper.prepend($hcc.append($table.clone()));
+			}
+			if (opts.frozenColumn && opts.frozenRow) {
+				$tc = $('<div />').addClass(opts.titleContainerClass);
+				$wrapper.prepend($tc.append($table.clone()));
+			}
 		};
 
 		// setup the style and position for divs
@@ -81,25 +87,93 @@
 			if (opts.tableWidth == '100%' || opts.tableWidth == '')
 				opts.tableWidth = $wrapper.parent().css('width').split('px')[0];
 
+			$wrapper.css({'position': 'relative'});
+
+			if (opts.frozenColumn && opts.frozenRow)
+				setStyleHV();
+			else if (opts.frozenColumn)
+				setStyleV();
+			else if (opts.frozenRow)
+				setStyleH();
+		};
+
+		var setStyleH = function() {
+			$hcc.css({
+				'overflow':		'hidden',
+				'width':		'100%'
+			});
+
+			$dc.css({
+				'position':		'absolute',
+				'left':			col_width,
+				'width':		$table.width(),
+				'overflow-y':	'scroll',
+			});
+
+			offset = $dc.find('tr:nth-child(' + (opts.rowCount + 1) + ')').offset();
+			col_height = offset.top - $dc.offset().top;
+
+			$hcc.css('height', col_height);
+
+			$dc.css({
+				'top':			col_height,
+				'height':		opts.tableHeight - col_height,
+			}).find('table').css({'margin-top': col_height * -1});
+
 			$wrapper.css({
-				'width':		opts.tableWidth,
-				'position':		'relative',
+				'width':		$table.width(),
 				'height':		opts.tableHeight
 			});
 
-			offset = $vcc.find('th:nth-child(' + (opts.frozenColumn + 1) + ')').offset();
+		};
+
+		var setStyleV = function() {
+			var wrapperStyle = {
+				'width':		opts.tableWidth,
+			};
+
+			$wrapper.css(wrapperStyle); 
+
+			offset = $vcc.find('th:nth-child(' + (opts.columnCount + 1) + ')').offset();
 			col_width = offset.left - $vcc.offset().left;
 
-			offset = $hcc.find('tr:nth-child(' + (opts.frozenRow + 1) + ')').offset();
+			var dcStyle = {
+				'position':		'absolute',
+				'top':			0,
+				'left':			col_width,
+				'width':		opts.tableWidth - col_width,
+				'overflow-x':	'scroll',
+			};
+
+			var vccStyle = {
+				'width':		col_width,
+				'overflow':		'hidden',
+			};
+			$vcc.css(vccStyle);
+
+			$dc.css(dcStyle).find('table').css({
+				'margin-left': col_width * -1,
+			});
+		};
+
+		var setStyleHV = function() {
+			$wrapper.css({
+				'width':		opts.tableWidth,
+				'height':		opts.tableHeight
+			}); 
+
+			offset = $vcc.find('th:nth-child(' + (opts.columnCount + 1) + ')').offset();
+			col_width = offset.left - $vcc.offset().left;
+			
+			offset = $hcc.find('tr:nth-child(' + (opts.rowCount + 1) + ')').offset();
 			col_height = offset.top - $hcc.offset().top;
-			console.log(col_height);
 
 			$vcc.css({
 				'position':		'absolute',
 				'width':		col_width,
 				'top':			col_height,
-				'height':		opts.tableHeight - col_height,		
-				'overflow':		'hidden'
+				'overflow':		'hidden',
+				'height':		opts.tableHeight - col_height
 			}).find('table').css({
 				'margin-top': col_height * -1
 			});
@@ -107,11 +181,9 @@
 			$hcc.css({
 				'position':		'absolute',
 				'left':			col_width,
-				'width':		opts.tableWidth - col_width,
+				'width':		opts.tableWidth - col_width - 15,
 				'height':		col_height,
 				'overflow':		'hidden',
-				'z-index':		2
-
 			}).find('table').css('margin-left', col_width * -1);
 
 			$dc.css({
@@ -119,10 +191,8 @@
 				'top':			col_height,
 				'left':			col_width,
 				'width':		opts.tableWidth - col_width,
-				'overflow-x':	'scroll',
-				'height':		opts.tableHeight - col_height,		
-				'z-index':		1
-
+				'overflow':		'scroll',
+				'height':		opts.tableHeight - col_height
 			}).find('table').css({
 				'margin-left': col_width * -1,
 				'margin-top': col_height * -1
@@ -134,18 +204,21 @@
 				'height':		col_height,		
 				'overflow':		'hidden',
 			});
-
-		};
+		}
 
 		// bind table events
 		var bindEvt = function() {
 			$dc.scroll(function(ev) {
-				$hcc.find('table').css({
-					'margin-left': (col_width * -1) - this.scrollLeft
-				});
-				$vcc.find('table').css({
-					'margin-top': (col_height * -1) - this.scrollTop
-				});
+				if (opts.frozenRow) {
+					$hcc.find('table').css({
+						'margin-left': (col_width * -1) - this.scrollLeft
+					});
+				}
+				if (opts.frozenColumn) {
+					$vcc.find('table').css({
+						'margin-top': (col_height * -1) - this.scrollTop
+					});
+				}
 			});
 		}
 
