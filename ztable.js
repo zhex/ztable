@@ -3,7 +3,7 @@
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php) 
  * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
  *
- * Version 1.0
+ * Version 1.1
  */
 
 (function($) {
@@ -162,11 +162,11 @@
 				'height':		opts.tableHeight
 			}); 
 
-			offset = $vcc.find('th:nth-child(' + (opts.columnCount + 1) + ')').offset();
-			col_width = offset.left - $vcc.offset().left;
+			offset = $dc.find('th:nth-child(' + (opts.columnCount + 1) + ')').offset();
+			col_width = offset.left - $dc.offset().left;
 			
-			offset = $hcc.find('tr:nth-child(' + (opts.rowCount + 1) + ')').offset();
-			col_height = offset.top - $hcc.offset().top;
+			offset = $dc.find('tr:nth-child(' + (opts.rowCount + 1) + ')').offset();
+			col_height = offset.top - $dc.offset().top;
 
 			$vcc.css({
 				'position':		'absolute',

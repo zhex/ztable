@@ -9,6 +9,6 @@ $('table.data').ztable({
 	frozenRow:				true,
 	rowCount:				1,
 	frozenColumn:			true,	
-	columnCount:			1
+	columnCount:			1,
 	tableWidth:				600,
 });
