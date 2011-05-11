@@ -54,16 +54,12 @@
 				setStyle();
 				bindEvt();
 			});
-		}
-
+		};
 		// create divs for the table needed
 		var createLayout = function() {
 			$table.wrap('<div class="' + opts.wrapperClass + '" />')
-				  .wrap('<div class="' + opts.dataContainerClass + '" />');
-
-			// set min-width to table th to prevent the bad result when calculate the offset
-			if ($table.find('th').css('min-width').split('px')[0] < 35)
-				  $table.find('th').css('min-width', 35); 
+				  .wrap('<div class="' + opts.dataContainerClass + '" />')
+				  .css('width', $table.width());
 
 			$dc = $table.parent();
 			$wrapper = $dc.parent();
@@ -107,7 +103,7 @@
 				'position':		'absolute',
 				'left':			col_width,
 				'width':		$table.width(),
-				'overflow-y':	'scroll',
+				'overflow-y':	'scroll'
 			});
 
 			offset = $dc.find('tr:nth-child(' + (opts.rowCount + 1) + ')').offset();
@@ -117,7 +113,7 @@
 
 			$dc.css({
 				'top':			col_height,
-				'height':		opts.tableHeight - col_height,
+				'height':		opts.tableHeight - col_height
 			}).find('table').css({'margin-top': col_height * -1});
 
 			$wrapper.css({
@@ -129,7 +125,7 @@
 
 		var setStyleV = function() {
 			var wrapperStyle = {
-				'width':		opts.tableWidth,
+				'width':		opts.tableWidth
 			};
 
 			$wrapper.css(wrapperStyle); 
@@ -142,17 +138,17 @@
 				'top':			0,
 				'left':			col_width,
 				'width':		opts.tableWidth - col_width,
-				'overflow-x':	'scroll',
+				'overflow-x':	'scroll'
 			};
 
 			var vccStyle = {
 				'width':		col_width,
-				'overflow':		'hidden',
+				'overflow':		'hidden'
 			};
 			$vcc.css(vccStyle);
 
 			$dc.css(dcStyle).find('table').css({
-				'margin-left': col_width * -1,
+				'margin-left':  col_width * -1
 			});
 		};
 
@@ -183,8 +179,10 @@
 				'left':			col_width,
 				'width':		opts.tableWidth - col_width - 15,
 				'height':		col_height,
-				'overflow':		'hidden',
-			}).find('table').css('margin-left', col_width * -1);
+				'overflow':		'hidden'
+			}).find('table').css({
+				'margin-left':	col_width * -1
+			});
 
 			$dc.css({
 				'position':		'absolute',
@@ -194,17 +192,17 @@
 				'overflow':		'scroll',
 				'height':		opts.tableHeight - col_height
 			}).find('table').css({
-				'margin-left': col_width * -1,
-				'margin-top': col_height * -1
+				'margin-left':	col_width * -1,
+				'margin-top':	col_height * -1
 			});
 
 			$tc.css({
 				'position':		'absolute',
 				'width':		col_width,	
 				'height':		col_height,		
-				'overflow':		'hidden',
+				'overflow':		'hidden'
 			});
-		}
+		};
 
 		// bind table events
 		var bindEvt = function() {
@@ -220,8 +218,7 @@
 					});
 				}
 			});
-		}
-
+		};
 
 		// run...
 		init();
