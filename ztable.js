@@ -57,6 +57,16 @@
 		};
 		// create divs for the table needed
 		var createLayout = function() {
+			// init table width
+			var cols = $table.find('col');
+			if (cols) {
+				var w = 0;
+				cols.each(function() {
+					w += parseInt($(this).attr('width'));
+				});
+				$table.css('width', w);
+			}
+
 			$table.wrap('<div class="' + opts.wrapperClass + '" />')
 				  .wrap('<div class="' + opts.dataContainerClass + '" />')
 				  .css('width', $table.width());
